@@ -17,5 +17,5 @@ export abstract class CompositeValidator implements IValidator {
     return this._validators
   }
 
-  abstract validate<T>(data: T): Promise<ValidationError>
+  abstract validate<T>(data: T): Promise<ValidationError | ValidationError[]>
 }
