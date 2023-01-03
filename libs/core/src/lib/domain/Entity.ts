@@ -16,9 +16,9 @@ export abstract class Entity<T> {
   get props(): T {
     return this._props
   }
-  get record(): T & { id: Identity<TIdentity> } {
+  get record(): T & { id: TIdentity } {
     return {
-      id: this._id,
+      id: this._id.value,
       ...this._props
     }
   }

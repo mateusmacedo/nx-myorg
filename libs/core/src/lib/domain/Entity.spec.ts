@@ -37,6 +37,6 @@ describe('Entity', () => {
   })
   it('should return the record of the entity', () => {
     sut = new DummyEntity({ dummy: 'dummy' }, strId)
-    expect(sut.record).toEqual({ id: strId, dummy: 'dummy' })
+    expect(sut.record).toEqual({ id: strId.value, dummy: 'dummy' })
   })
 })
