@@ -13,6 +13,19 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "test": {
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/jest.preset.js"
+      ]
+    },
+    "lint": {
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json"
+      ]
     }
   },
   "namedInputs": {
@@ -21,7 +34,7 @@
     "sharedGlobals": []
   },
   "workspaceLayout": {
-    "appsDir": "packages",
-    "libsDir": "packages"
+    "appsDir": "apps",
+    "libsDir": "libs"
   }
 }
