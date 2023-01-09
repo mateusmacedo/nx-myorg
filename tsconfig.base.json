@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@myorg/core": ["libs/core/src/index.ts"]
+      "@myorg/core": ["libs/core/src/index.ts"],
+      "@myorg/users": ["libs/users/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

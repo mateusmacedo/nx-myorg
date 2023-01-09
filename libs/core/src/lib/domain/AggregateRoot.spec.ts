@@ -10,12 +10,22 @@ type TDummy = {
     dummyEmbedProp: string
   }
 }
-class DummyDomainEvent extends DomainEvent<TDummy> {}
-class DummyAggregateRoot extends AggregateRoot<TDummy> {}
+class DummyDomainEvent extends DomainEvent<TDummy, string> {}
+class DummyAggregateRoot extends AggregateRoot<TDummy, string> {
+  constructor(props: TDummy, id: Identity<string>) {
+    super(props, id)
+  }
+  static create(props: TDummy, id: Identity<string>): DummyAggregateRoot {
+    const instance = new DummyAggregateRoot(props, id)
+    const event = new DummyDomainEvent(props, id, new Date())
+    instance.addDomainEvent(event)
+    return instance
+  }
+}
 describe('AggregateRoot', () => {
   let id: Identity<string>
-  let sut: AggregateRoot<TDummy>
-  let domainEvent: DomainEvent
+  let sut: AggregateRoot<TDummy, string>
+  let domainEvent: DomainEvent<TDummy, string>
   let tDummy: TDummy
   beforeEach(() => {
     jest.clearAllMocks()
@@ -29,32 +39,28 @@ describe('AggregateRoot', () => {
       }
     }
   })
-  it('should create an instance', () => {
+  it('should instanciate ', () => {
     sut = new DummyAggregateRoot(tDummy, id)
     expect(sut).toBeTruthy()
     expect(sut.id).toBe(id)
     expect(sut.props).toBe(tDummy)
     expect(sut.domainEvents.size).toBe(0)
   })
-  it('should add domain event', () => {
-    sut = new DummyAggregateRoot(tDummy, id)
-    domainEvent = new DummyDomainEvent(tDummy, new Date())
-    sut.addDomainEvent(domainEvent)
+  it('should instanciate with domain event', () => {
+    sut = DummyAggregateRoot.create(tDummy, id)
+    expect(sut).toBeTruthy()
+    expect(sut.id).toBe(id)
+    expect(sut.props).toBe(tDummy)
     expect(sut.domainEvents.size).toBe(1)
-    expect(sut.domainEvents.has(domainEvent)).toBeTruthy()
-  })
-  it('should not add domain event if already added', () => {
-    sut = new DummyAggregateRoot(tDummy, id)
-    domainEvent = new DummyDomainEvent(tDummy, new Date())
-    sut.addDomainEvent(domainEvent)
-    sut.addDomainEvent(domainEvent)
-    expect(sut.domainEvents.size).toBe(1)
-    expect(sut.domainEvents.has(domainEvent)).toBeTruthy()
+    domainEvent = sut.domainEvents.values().next().value
+    expect(domainEvent).toBeInstanceOf(DummyDomainEvent)
+    expect(domainEvent.getData()).toBe(tDummy)
+    expect(domainEvent.getIdentity()).toBe(id)
+    expect(domainEvent.getOccurred()).toBeInstanceOf(Date)
   })
   it('should clear domain events', () => {
-    sut = new DummyAggregateRoot(tDummy, id)
-    domainEvent = new DummyDomainEvent(tDummy, new Date())
-    sut.addDomainEvent(domainEvent)
+    sut = DummyAggregateRoot.create(tDummy, id)
+    expect(sut.domainEvents.size).toBe(1)
     sut.clearEvents()
     expect(sut.domainEvents.size).toBe(0)
   })

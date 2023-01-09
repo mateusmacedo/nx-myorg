@@ -1,5 +1,5 @@
 export type TIdentity = string | number
-export class Identity<T extends TIdentity> {
+export class Identity<T> {
   private _id: T
   constructor(id: T) {
     this._id = id

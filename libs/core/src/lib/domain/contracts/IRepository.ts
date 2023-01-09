@@ -1,24 +1,19 @@
 import { TIdentity } from '../Identity'
 
-export type QueryProps = {
-  [key: string]: unknown
+export type PaginationParams = {
+  page: number
+  perPage: number
 }
-export interface IRepository<T> {
-  getPaginationParams(page: number, perPage?: number)
-
-  list(
-    filter?: QueryProps,
-    page?: number,
-    _perPage?: number
-  ): Promise<{ rows: T[]; totalRows: number; perPage: number }>
-
-  findOne(filter: Partial<QueryProps>): Promise<T>
-
-  find(filter: Partial<QueryProps>): Promise<T[]>
-
-  upsert(data: Partial<QueryProps>, _id?: TIdentity): Promise<T>
-
-  remove(filter: Partial<QueryProps>): Promise<void>
-
-  isValidIdKey(_id: string): boolean
+export type PaginatedResult<T> = {
+  rows: Set<T>
+  total: number
+} & PaginationParams
+export interface IReadRepository<T> {
+  findOne(filter: Partial<T>): Promise<T>
+  find(filter: Partial<T>, pagination: PaginationParams): Promise<PaginatedResult<T>>
 }
+export interface IWriteRepository<T> {
+  upsert(data: Partial<T>, identity?: TIdentity): Promise<T>
+  remove(filter: Partial<T>): Promise<void>
+}
+export type TUpsertRepository<T> = Pick<IWriteRepository<T>, 'upsert'>

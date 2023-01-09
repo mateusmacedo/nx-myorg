@@ -1,37 +1,36 @@
 import { IValidator } from '../contracts/IValidator'
 import { CompositeValidator } from './CompositeValidator'
 import { ValidationError } from './ValidationError'
-
-describe('CompositeValidator', () => {
-  class DummyValidator implements IValidator {
-    validate<T>(data: T): Promise<ValidationError | ValidationError[]> {
-      console.info('DummyValidator.validate:', data)
-      return Promise.resolve(null)
-    }
+class DummyValidator implements IValidator {
+  validate<T>(data: T): Promise<ValidationError | ValidationError[]> {
+    console.info('DummyValidator.validate:', data)
+    return Promise.resolve(null)
   }
-  class DummyCompositeValidator extends CompositeValidator {
-    private _errors: ValidationError[] = []
-    async validate<T>(data: T): Promise<ValidationError | ValidationError[]> {
-      for (const validator of this._validators) {
-        const error = await validator.validate(data)
-        if (Array.isArray(error)) {
-          this._errors = this._errors.concat(error)
-        } else if (error instanceof ValidationError) {
-          this._errors.push(error)
-        } else {
-          return Promise.resolve(null)
-        }
+}
+class DummyCompositeValidator extends CompositeValidator {
+  private _errors: ValidationError[] = []
+  async validate<T>(data: T): Promise<ValidationError | ValidationError[]> {
+    for (const validator of this._validators) {
+      const error = await validator.validate(data)
+      if (Array.isArray(error)) {
+        this._errors = this._errors.concat(error)
+      } else if (error instanceof ValidationError) {
+        this._errors.push(error)
+      } else {
+        return Promise.resolve(null)
       }
-      return Promise.resolve(this._errors)
     }
+    return Promise.resolve(this._errors)
   }
+}
+describe('CompositeValidator', () => {
   let validator: IValidator
   let validatorSet: Set<IValidator>
   let sut: CompositeValidator
   beforeEach(() => {
     jest.clearAllMocks()
     validator = new DummyValidator()
-    validatorSet = new Set<IValidator>([validator])
+    validatorSet = new Set([validator])
   })
   it('should create a instance with validators', () => {
     sut = new DummyCompositeValidator(validatorSet)
