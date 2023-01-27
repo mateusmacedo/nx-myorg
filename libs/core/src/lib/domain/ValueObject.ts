@@ -1,6 +1,4 @@
-interface ValueObjectProps {
-  [index: string]: unknown
-}
+import { ValueObjectProps } from './contracts/IShared'
 
 export abstract class ValueObject<T extends ValueObjectProps> {
   protected props: T
